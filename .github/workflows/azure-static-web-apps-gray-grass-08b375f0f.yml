@@ -18,6 +18,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Add allowed IPs
+        env:
+          ALLOWED_IPS: ${{ secrets.ALLOWED_IPS }}
+        run: 
+          jq $(echo ".networking.allowedIpRanges=$(echo "${ALLOWED_IPS}" | tr '\012' ' ' | jq -c -R '[ split(" ")[] | select(. != "") ]')") < staticwebapp.config.json > staticwebapp.config.json
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
